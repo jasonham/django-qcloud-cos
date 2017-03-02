@@ -29,7 +29,9 @@ class Auth(object):
             t_tuple = (self.appid, self.bucket, self.SecretID, self.expiredTime, self.currentTime, self.rand)
             original = 'a=%s&b=%s&k=%s&e=%s&t=%s&r=%s&f=' % t_tuple
         else:
-            fileid = quote(self.file, safe='/', encoding='utf-8', errors=None)
+            t_tuple = (self.appid, self.bucket, self.file)
+            filePath = '/%s/%s/%s' % t_tuple
+            fileid = quote(filePath, safe='/', encoding='utf-8', errors=None)
             expired_time = 0
             t_tuple = (self.appid, self.bucket, self.SecretID, expired_time, self.currentTime, self.rand, fileid)
             original = 'a=%s&b=%s&k=%s&e=%s&t=%s&r=%s&f=%s' % t_tuple
