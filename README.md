@@ -10,6 +10,7 @@ django-qcloud-cos 是一个服务于腾讯云存储的Django自定义存储系�
 * 将静态文件存放到云
 >STATICFILES_STORAGE = 'qcloudcos.qcloudstorage.QcloudStorage'
 * 替换Appid， SecretId， SecretKey, region, bucket
+
     QCLOUD_STORAGE_OPTION = {
         'Appid': 'appid: 开发者访问 COS 服务时拥有的用户维度唯一资源标识，用以标示资源。',
         'SecretID': 'SecretID: SecretID 是开发者拥有的项目身份识别 ID，用以身份认证',
