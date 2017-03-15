@@ -40,7 +40,7 @@ class Auth(object):
             self.q_sign_time = int(sign_time)
 
         if key_time == "":
-            self.q_key_time = self.q_sign_time + 60
+            self.q_key_time = int(self.q_sign_time) + 60
         else:
             self.q_key_time = int(key_time)
 
@@ -52,36 +52,39 @@ class Auth(object):
         return signkey
 
     def format_args(self, args, isfullstring=True, isheader=True):
-        list_temp = []
-        if isheader:
-            str_temp = '%s-%s.%s.myqcloud.com' % (self.bucket, self.appid, self.region)
-            list_temp = [('host', quote(str_temp, encoding='utf-8').lower())]
-
-        try:
-            args_list = args.split('&')
-        except:
-            args_list = args
-
-        for n in args_list:
-            arg = n.split(':')
-            list_temp.append((arg[0].lower(), quote(arg[1], encoding='utf-8').lower()))
-
-        list_temp.sort(key=lambda x:x[0])
         my_f_args = ''
-        if isfullstring:
-            for n in list_temp:
-                my_f_args += n[0] + '=' + n[1] + '&'
-        else:
-            for n in list_temp:
-                my_f_args += n[0] + ';'
+        if args != '':
+            list_temp = []
+            if isheader:
+                str_temp = '%s-%s.%s.myqcloud.com' % (self.bucket, self.appid, self.region)
+                list_temp = [('host', quote(str_temp, encoding='utf-8').lower())]
 
-        my_f_args = my_f_args[0:-1]
+            try:
+                args_list = args.split('&')
+            except:
+                args_list = args
+
+            for n in args_list:
+                arg = n.split(':')
+                list_temp.append((arg[0].lower(), quote(arg[1], encoding='utf-8').lower()))
+
+            list_temp.sort(key=lambda x:x[0])
+
+            if isfullstring:
+                for n in list_temp:
+                    my_f_args += n[0] + '=' + n[1] + '&'
+            else:
+                for n in list_temp:
+                    my_f_args += n[0] + ';'
+
+            my_f_args = my_f_args[0:-1]
+
         return my_f_args
 
     def get_formatstring(self):
         format_method = self.method
         format_url = self.objectname
-        format_parameters = self.format_args(self.parameters,True,False)
+        format_parameters = self.format_args(self.parameters,True, False)
 
         format_head = self.format_args(self.head)
         format_string = "%s\n%s\n%s\n%s\n" % (format_method, format_url, format_parameters, format_head)
@@ -104,8 +107,8 @@ class Auth(object):
         return signature
 
     def get_authorization(self):
-        header_list = self.format_args(self.head,False)
-        signed_parameter = self.format_args(self.parameters,False,False)
+        header_list = self.format_args(self.head, False)
+        signed_parameter = self.format_args(self.parameters, False, False)
         q_time = '%s;%s' % (self.q_sign_time, self.q_key_time)
 
         t_tuple = (self.SecretID, q_time, q_time, header_list, signed_parameter, self.get_signature())

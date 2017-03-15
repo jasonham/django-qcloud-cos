@@ -1,4 +1,4 @@
-from QcloudCos import cos_auth
+from qcloudcos import cos_auth
 import unittest
 
 
