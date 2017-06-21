@@ -21,7 +21,8 @@ class QcloudStorage(Storage):
         name = self._get_valid_name(name)
         name = self._get_available_name(name)
         content = content.read()
-        response = CosObject.put_object(self, name, content)
+        cos_object = CosObject()
+        response = cos_object.put_object(name, content)
         return response.request.path_url
 
     def _get_valid_name(self, name):
@@ -62,9 +63,11 @@ class QcloudStorage(Storage):
             return False
 
     def url(self, name):
-        url = "http://%s-%s.file.myqcloud.com%s" % (self.option['bucket'],
-                                                        self.option['Appid'],
-                                                        name)
+        url = "http://%s-%s.cosgz.myqcloud.com%s" % (
+            self.option['bucket'],
+            self.option['Appid'],
+            name,
+        )
 
         return url
 
@@ -79,4 +82,3 @@ class QcloudStorage(Storage):
         name = self._get_valid_name(name)
         cos = CosObject()
         cos.delete_object(name)
-

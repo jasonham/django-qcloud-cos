@@ -1,10 +1,10 @@
-import random
+#!/usr/bin/env python
+# coding=utf-8
+
 import time
-from urllib.parse import quote
+from urllib2 import quote
 import hmac
 import hashlib
-import binascii
-import base64
 
 
 class Auth(object):
@@ -40,7 +40,7 @@ class Auth(object):
             self.q_sign_time = int(sign_time)
 
         if key_time == "":
-            self.q_key_time = int(self.q_sign_time) + 60
+            self.q_key_time = int(self.q_sign_time) + 600
         else:
             self.q_key_time = int(key_time)
 
@@ -48,7 +48,7 @@ class Auth(object):
 
     def get_signkey(self):
         q_time = '%s;%s' % (self.q_sign_time, self.q_key_time)
-        signkey = hmac.new(bytes(self.SecretKey, 'utf-8'), bytes(q_time, 'utf-8'), hashlib.sha1).hexdigest()
+        signkey = hmac.new(bytearray(self.SecretKey, 'utf-8'), bytearray(q_time, 'utf-8'), hashlib.sha1).hexdigest()
         return signkey
 
     def format_args(self, args, isfullstring=True, isheader=True):
@@ -68,7 +68,7 @@ class Auth(object):
                 arg = n.split(':')
                 list_temp.append((arg[0].lower(), quote(arg[1], encoding='utf-8').lower()))
 
-            list_temp.sort(key=lambda x:x[0])
+            list_temp.sort(key=lambda x: x[0])
 
             if isfullstring:
                 for n in list_temp:
@@ -84,7 +84,7 @@ class Auth(object):
     def get_formatstring(self):
         format_method = self.method
         format_url = self.objectname
-        format_parameters = self.format_args(self.parameters,True, False)
+        format_parameters = self.format_args(self.parameters, True, False)
 
         format_head = self.format_args(self.head)
         format_string = "%s\n%s\n%s\n%s\n" % (format_method, format_url, format_parameters, format_head)
@@ -100,8 +100,8 @@ class Auth(object):
 
     def get_signature(self):
         signature = hmac.new(
-            bytes(self.get_signkey(), 'utf-8'),
-            bytes(self.get_stringtosign(), 'utf-8'),
+            bytearray(self.get_signkey(), 'utf-8'),
+            bytearray(self.get_stringtosign(), 'utf-8'),
             hashlib.sha1
         ).hexdigest()
         return signature
@@ -120,44 +120,3 @@ class Auth(object):
                         "q-url-param-list=%s&" \
                         "q-signature=%s" % t_tuple
         return authorization
-
-
-    # def __init__(self, appid, SecretID, SecretKey, bucket, file='', currentTime='', expiredTime='', rand=''):
-    #     self.appid = appid
-    #     self.SecretID = SecretID
-    #     self.SecretKey = SecretKey
-    #     self.bucket = bucket
-    #     self.file = file
-    #
-    #     if currentTime == '':
-    #         self.currentTime = int(time.time())
-    #         self.expiredTime = self.currentTime + 60
-    #         self.rand = random.randint(0, 9999999999)
-    #     else:
-    #         self.currentTime = currentTime
-    #         self.expiredTime = expiredTime
-    #         self.rand = rand
-    #
-    # def get_original(self):
-    #     if self.file == '':
-    #         t_tuple = (self.appid, self.bucket, self.SecretID, self.expiredTime, self.currentTime, self.rand)
-    #         original = 'a=%s&b=%s&k=%s&e=%s&t=%s&r=%s&f=' % t_tuple
-    #     else:
-    #         t_tuple = (self.appid, self.bucket, self.file)
-    #         filePath = '/%s/%s/%s' % t_tuple
-    #         fileid = quote(filePath, safe='/', encoding='utf-8', errors=None)
-    #         expired_time = 0
-    #         t_tuple = (self.appid, self.bucket, self.SecretID, expired_time, self.currentTime, self.rand, fileid)
-    #         original = 'a=%s&b=%s&k=%s&e=%s&t=%s&r=%s&f=%s' % t_tuple
-    #
-    #     return original
-    #
-    # def get_sign(self):
-    #     original = self.get_original().encode('utf-8')
-    #     secret_key = self.SecretKey.encode('utf-8')
-    #     hmac_hexdigest = hmac.new(bytes(secret_key), bytes(original), hashlib.sha1).hexdigest()
-    #     SignTmp = binascii.unhexlify(hmac_hexdigest)
-    #     sign = base64.b64encode(SignTmp + original).decode('utf-8')
-    #
-    #     return sign
-

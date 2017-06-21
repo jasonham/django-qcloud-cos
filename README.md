@@ -3,8 +3,19 @@ Django storage for qcloud.com 对象存储服务
 # 介绍
 django-qcloud-cos 是一个服务于腾讯云存储的Django自定义存储系统。
 # 安装
-1. 拷贝qcloudcos目录于自己的项目内，放于与manage.py同一级。
-2. 配置setting.py:
+* 使用 pip 安装
+
+```
+pip install git+https://github.com/zxyf/django-qcloud-cos.git
+```
+
+* 添加requirements.txt
+
+```
+git+https://github.com/zxyf/django-qcloud-cos.git
+```
+
+* 配置setting.py:
     * 将上传文件存放到云
     ```DEFAULT_FILE_STORAGE = 'qcloudcos.qcloudstorage.QcloudStorage'```
     * 将静态文件存放到云
@@ -19,5 +30,10 @@ django-qcloud-cos 是一个服务于腾讯云存储的Django自定义存储系�
         'bucket': '存储桶是 COS 中用于存储数据的容器，是用户存储在 Appid 下的第一级目录，每个对象都存储在一个存储桶中。',
     }
     ```
-3. 同步静态文件到云
+* 同步静态文件到云
     ```python manage.py collectstatic```
+
+# 本Fork增强
+1. 支持Python2.7
+2. 修正访问url
+3. 提供pip install setup脚本
