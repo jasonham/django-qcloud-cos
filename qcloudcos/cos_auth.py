@@ -40,7 +40,7 @@ class Auth(object):
             self.q_sign_time = int(sign_time)
 
         if key_time == "":
-            self.q_key_time = int(self.q_sign_time) + 600
+            self.q_key_time = int(self.q_sign_time) + 3000
         else:
             self.q_key_time = int(key_time)
 
