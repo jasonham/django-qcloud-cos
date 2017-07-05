@@ -63,9 +63,14 @@ class QcloudStorage(Storage):
             return False
 
     def url(self, name):
-        url = "http://%s-%s.cosgz.myqcloud.com%s" % (
+        if settings.COS_USE_CDN:
+            cdn_host = 'file'
+        else:
+            cdn_host = 'cosgz'
+        url = "http://%s-%s.%s.myqcloud.com%s" % (
             self.option['bucket'],
             self.option['Appid'],
+            cdn_host,
             name,
         )
 

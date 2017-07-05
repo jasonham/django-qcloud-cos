@@ -2,6 +2,7 @@
 # encoding: utf-8
 
 import os
+
 from setuptools import (
     setup,
     find_packages,
@@ -17,7 +18,7 @@ DESCRIPTION = "Django qcloud cos storage backend"
 AUTHOR = "jasonham"
 AUTHOR_EMAIL = "jasonham@gmail.com"
 URL = "https://github.com/jasonham"
-VERSION = '0.1'
+VERSION = '0.2'
 
 setup(
     name=NAME,
