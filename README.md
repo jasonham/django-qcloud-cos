@@ -35,5 +35,7 @@ git+https://github.com/zxyf/django-qcloud-cos.git
 
 # 本Fork增强
 1. 支持Python2.7
-2. 修正访问url
+2. 修正访问url, 支持CDN
 3. 提供pip install setup脚本
+4. 配置抽离到settings中
+5. 支持直接存储与读取URL
