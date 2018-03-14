@@ -78,16 +78,22 @@ class QcloudStorage(Storage):
         if name.startswith('http'):
             # 直接存的URL，直接返回，这类数据不支持取content
             return name
-        if settings.COS_USE_CDN:
-            cdn_host = 'file'
+        if getattr(settings, 'COS_URL', ''):
+            url = "%s%s" % (
+                settings.COS_URL,
+                name,
+            )
         else:
-            cdn_host = 'cosgz'
-        url = "http://%s-%s.%s.myqcloud.com%s" % (
-            self.option['bucket'],
-            self.option['Appid'],
-            cdn_host,
-            name,
-        )
+            if settings.COS_USE_CDN:
+                cdn_host = 'file'
+            else:
+                cdn_host = 'cosgz'
+            url = "http://%s-%s.%s.myqcloud.com%s" % (
+                self.option['bucket'],
+                self.option['Appid'],
+                cdn_host,
+                name,
+            )
 
         return url
 
