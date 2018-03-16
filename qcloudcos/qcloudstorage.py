@@ -13,18 +13,28 @@ class QcloudStorage(Storage):
             self.option = settings.QCLOUD_STORAGE_OPTION
 
     def _open(self, name, mode='rb'):
+        if name.startswith('http'):
+            # 直接存的URL，直接返回，这类数据不支持取content
+            return ''
         cos = CosObject()
         response = cos.get_object(name, True)
         return response.content
 
     def _save(self, name, content):
+        if name.startswith('http'):
+            # 直接存的URL，直接返回，这类数据不支持取content
+            return name
         name = self._get_valid_name(name)
         name = self._get_available_name(name)
         content = content.read()
-        response = CosObject.put_object(self, name, content)
+        cos_object = CosObject()
+        response = cos_object.put_object(name, content)
         return response.request.path_url
 
     def _get_valid_name(self, name):
+        if name.startswith('http'):
+            # 直接存的URL，直接返回，这类数据不支持取content
+            return name
         dir_name, file_name = os.path.split(name)
         file_name = get_valid_filename(file_name)
         name = os.path.join(dir_name, file_name)
@@ -53,6 +63,9 @@ class QcloudStorage(Storage):
         return name
 
     def exists(self, name):
+        if name.startswith('http'):
+            # 直接存的URL，直接返回，这类数据不支持取content
+            return True
         name = self._get_valid_name(name)
         cos = CosObject()
         response = cos.head_object(name, True)
@@ -62,13 +75,32 @@ class QcloudStorage(Storage):
             return False
 
     def url(self, name):
-        url = "http://%s-%s.file.myqcloud.com%s" % (self.option['bucket'],
-                                                        self.option['Appid'],
-                                                        name)
+        if name.startswith('http'):
+            # 直接存的URL，直接返回，这类数据不支持取content
+            return name
+        if getattr(settings, 'COS_URL', ''):
+            url = "%s%s" % (
+                settings.COS_URL,
+                name,
+            )
+        else:
+            if settings.COS_USE_CDN:
+                cdn_host = 'file'
+            else:
+                cdn_host = 'cosgz'
+            url = "http://%s-%s.%s.myqcloud.com%s" % (
+                self.option['bucket'],
+                self.option['Appid'],
+                cdn_host,
+                name,
+            )
 
         return url
 
     def size(self, name):
+        if name.startswith('http'):
+            # 直接存的URL，直接返回，这类数据不支持取content
+            return 0
         name = self._get_valid_name(name)
         cos = CosObject()
         response = cos.head_object(name, True)
@@ -76,7 +108,9 @@ class QcloudStorage(Storage):
             return response.headers['Content-Length']
 
     def delete(self, name):
+        if name.startswith('http'):
+            # 直接存的URL，直接返回，这类数据不支持取content
+            return
         name = self._get_valid_name(name)
         cos = CosObject()
         cos.delete_object(name)
-

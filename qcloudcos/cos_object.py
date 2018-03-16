@@ -1,6 +1,10 @@
 import requests
 from qcloudcos.cos_auth import Auth
 from django.conf import settings
+from utils import get_logger
+
+
+LOGGER = get_logger('Tencent Cos')
 
 
 class CosObject(object):
@@ -48,6 +52,8 @@ class CosObject(object):
         r = s.put(url, data=content)
         if r.status_code == 200:
             return r
+        else:
+            LOGGER.info(r.content)
 
     def head_object(self, name, is_private=False):
         method = 'head'
